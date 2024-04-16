@@ -9,7 +9,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 
-
 function SnackbarWrapper({ content, setContent }) {
     const [open, setOpen] = React.useState(false);
     const [current, setCurrent] = React.useState(null);
@@ -83,15 +82,40 @@ function SnackbarWrapper({ content, setContent }) {
     );
 };
 
+const tryMergeFirstLevel = (...objs) => {
+    let merged = {};
+
+    // Loop através de cada objeto
+    objs.forEach(obj => {
+        // Merge as propriedades do objeto atual
+        if (obj) {
+            for (let prop in obj) {
+                // Se a propriedade já existe, verifica se é um objeto para fazer o merge
+                if (merged.hasOwnProperty(prop) && typeof merged[prop] === 'object' && typeof obj[prop] === 'object') {
+                    merged[prop] = { ...merged[prop], ...obj[prop] };
+                } else if (obj[prop]) {
+                    // Se a propriedade não existe ou não é um objeto, simplesmente a adiciona
+                    merged[prop] = obj[prop];
+                }
+            }
+        }
+    });
+
+    return merged;
+};
 
 export default function SnackbarProvider({ options: globalOptions, children }) {
     const [content, setContent] = React.useState(null);
 
+    // ... Tentativa de mesclar as opções globais, caso o snackbar provider estiver encadeado no projeto
+    const current = React.useContext(SnackbarContext);
+    const gOptions = React.useMemo(() => tryMergeFirstLevel(current?.globalOptions, globalOptions), [current]);
+
     const setSnackbar = (message, severity, options) =>
-        setContent({ message, severity, options: { ...globalOptions, ...options } });
+        setContent({ message, severity, options: tryMergeFirstLevel(gOptions, options) });
 
     return (
-        <SnackbarContext.Provider value={{ initialized: true, setSnackbar }}>
+        <SnackbarContext.Provider value={{ initialized: true, globalOptions: gOptions, setSnackbar }}>
             {
                 children
             }

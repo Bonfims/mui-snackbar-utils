@@ -113,13 +113,20 @@ export default function PreviewProvider() {
             <SnackbarProvider options={{
                 anchorOrigin: {
                     vertical: "bottom",
-                    horizontal: "right"
+                    horizontal: "center"
                 },
                 alertProps: {
-                    variant: "outlined"
+                    variant: "outlined",
+                    sx:{ bgcolor: 'background.paper' }
                 }
             }}>
                 <Preview items={others} title="with Global Context Options" />
+                <SnackbarProvider>
+                    <Preview items={others} title="Just chained!" />
+                    <SnackbarProvider options={{ anchorOrigin: { vertical: "top" }}} >
+                        <Preview items={others} title="keeping chained but with TOP!" />
+                    </SnackbarProvider>
+                </SnackbarProvider>
             </SnackbarProvider>
         </SnackbarProvider>
     );

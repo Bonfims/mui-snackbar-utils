@@ -9,7 +9,8 @@ const SnackbarContext = React.createContext({
      * @returns {void}
      */
     setSnackbar: (message, type, options) => console.error("Snackbar context not initialized", message, type),
-    initialized: false
+    initialized: false,
+    globalOptions: {}
 });
 
 export default SnackbarContext;
