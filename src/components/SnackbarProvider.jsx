@@ -36,15 +36,15 @@ function SnackbarWrapper({ content, setContent }) {
     };
 
     // ... verifica se é do tipo alerta
-    const severity = ["error", "info", "success", "warning"].includes(current?.severity);
+    const severity = React.useMemo(() => ["error", "info", "success", "warning"].includes(current?.severity), [current?.severity]);
 
-    const snackbarProps = Object.keys(current?.options || {})
+    const snackbarProps = React.useMemo(() => Object.keys(current?.options || {})
         .filter(e => e != "alertProps")
-        .reduce((prop, field) => ({ ...prop, [field]: current?.options?.[field] }), {});
+        .reduce((prop, field) => ({ ...prop, [field]: current?.options?.[field] }), {}), [current?.options]);
 
-    const alertProps = Object.keys(current?.options?.alertProps || {})
+    const alertProps = React.useMemo(() => Object.keys(current?.options?.alertProps || {})
         .filter(e => e != "title")
-        .reduce((prop, field) => ({ ...prop, [field]: current?.options?.alertProps?.[field] }), {});
+        .reduce((prop, field) => ({ ...prop, [field]: current?.options?.alertProps?.[field] }), {}), [current?.options?.alertProps]);
 
     return (
         <Snackbar
@@ -111,8 +111,8 @@ export default function SnackbarProvider({ options: globalOptions, children }) {
     const current = React.useContext(SnackbarContext);
     const gOptions = React.useMemo(() => tryMergeFirstLevel(current?.globalOptions, globalOptions), [current]);
 
-    const setSnackbar = (message, severity, options) =>
-        setContent({ message, severity, options: tryMergeFirstLevel(gOptions, options) });
+    const setSnackbar = React.useCallback((message, severity, options) =>
+        setContent({ message, severity, options: tryMergeFirstLevel(gOptions, options) }), []);
 
     return (
         <SnackbarContext.Provider value={{ initialized: true, globalOptions: gOptions, setSnackbar }}>

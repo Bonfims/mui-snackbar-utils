@@ -106,9 +106,22 @@ function Preview({ title, items }) {
     )
 }
 
+function Dummy () {
+    const { setSnackbar } = useSnackbar();
+
+    React.useEffect(() => {
+        if(setSnackbar)
+            setSnackbar("Render Test!");
+    }, [setSnackbar]);
+
+    return null;
+};
+
 export default function PreviewProvider() {
+
     return (
         <SnackbarProvider>
+            <Dummy />
             <Preview items={tests} />
             <SnackbarProvider options={{
                 anchorOrigin: {
